@@ -27,7 +27,7 @@ app.get("/", (req, res)=>{
 
 app.listen(PORT, async ()=>{
     console.log(`App listening on port ${PORT}`)
-    await connectToDatabase()
+    await connectToDatabase();
 })
 
 export default app

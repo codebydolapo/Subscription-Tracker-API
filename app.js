@@ -1,8 +1,6 @@
 import express from "express";
 import errorMiddleware from "./middleware/error.middleware.js";
-
 import { PORT } from "./config/env.js";
-
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import subscriptionRouter from "./routes/subscriptions.routes.js";
@@ -13,25 +11,34 @@ import workflowRouter from "./routes/workflow.routes.js";
 
 const app = express();
 
-app.use(express.json())
-app.use(express.urlencoded({extended: false}))
-app.use(cookieParser())
-app.use(arcjetMiddleware);
+// Middleware:
+app.use(express.json()); // Parses incoming requests with JSON payloads. 
+app.use(express.urlencoded({ extended: false })); // Parses incoming requests with URL-encoded payloads. 
+app.use(cookieParser()); //  This is necessary for handling cookies.
+app.use(arcjetMiddleware); // This is custom middleware for rate limiting.
 
-app.use("/api/v1/auth", authRouter)
-app.use("/api/v1/users", userRouter)
-app.use("/api/v1/subscriptions", subscriptionRouter)
-app.use("/api/v1/workflows", workflowRouter)
 
-app.use(errorMiddleware)
+// Routes:
+// Mount the authentication routes at the `/api/v1/auth` path.  All routes defined in `authRouter` will be prefixed with this path.
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/subscriptions", subscriptionRouter);
+app.use("/api/v1/workflows", workflowRouter);
 
-app.get("/", (req, res)=>{
-    res.send("Hello World");
-})
 
-app.listen(PORT, async ()=>{
-    console.log(`App listening on port ${PORT}`)
-    await connectToDatabase();
-})
+// Error Handling Middleware:
+//  - errorMiddleware:  This custom middleware is responsible for handling errors that occur during the request processing.
+app.use(errorMiddleware);
 
-export default app
+
+// app.get("/", (req, res) => {
+//     res.send("Hello World");
+// });
+
+
+app.listen(PORT, async () => {
+    console.log(`App listening on port ${PORT}`);
+    await connectToDatabase(); //  -  Connect to the MongoDB database.  
+});
+
+export default app;
